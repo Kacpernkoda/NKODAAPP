@@ -16,7 +16,7 @@ class AiVisualizationService {
   }) async {
     // Wczytanie bezpiecznego klucza ze środowiska .env (ukrytego przed GitHubem)
     final String apiKey = dotenv.env['AI_API_KEY'] ?? '';
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey');
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=$apiKey');
 
     final base64Input = base64Encode(imageBytes);
 
@@ -44,16 +44,26 @@ class AiVisualizationService {
       final jsonResponse = jsonDecode(response.body);
       final candidates = jsonResponse['candidates'] as List?;
       if (candidates != null && candidates.isNotEmpty) {
+        final finishReason = candidates[0]['finishReason'];
+        if (finishReason == 'SAFETY') {
+          throw Exception('System bezpieczeństwa Google zablokował edycję tego zdjęcia (np. model wykrył twarz, numery rejestracyjne lub inny chroniony element). Wybierz inny kadr z uciętymi tablicami.');
+        }
         final parts = candidates[0]['content']?['parts'] as List?;
         if (parts != null) {
           for (var part in parts) {
             if (part.containsKey('inlineData')) {
               return base64Decode(part['inlineData']['data']);
             }
+            if (part.containsKey('text')) {
+              String textResponse = part['text'].toString();
+              String shortText = textResponse.length > 50 ? textResponse.substring(0, 50) + '...' : textResponse;
+              print('AI opisało zamiast wygenerować obraz: $textResponse');
+              throw Exception('Google AI zwróciło tekstowy opis zamiast pliku wizualizacji: "$shortText". Oznacza to, że Twój Google projekt nie ma włączonej obsługi Vertex AI Image Generation.');
+            }
           }
         }
       }
-      return null;
+      throw Exception('Nie udało się wyodrębnić zdjęcia z odpowiedzi modelu AI.');
     } else {
       throw Exception('Gemini API Error: ${response.statusCode} - ${response.body}');
     }
