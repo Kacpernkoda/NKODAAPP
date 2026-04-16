@@ -15,7 +15,7 @@ class AiVisualizationService {
     required String colorName,
   }) async {
     // Wczytanie bezpiecznego klucza ze środowiska .env (ukrytego przed GitHubem)
-    final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+    final String apiKey = dotenv.env['AI_API_KEY'] ?? '';
     final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=$apiKey');
 
     final base64Input = base64Encode(imageBytes);

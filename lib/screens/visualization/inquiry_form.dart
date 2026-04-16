@@ -76,7 +76,7 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
         'ilosc': _selectedQuantity,
         'kolor_symbol': '${widget.colorSymbol} (${widget.colorName})',
         'link_do_wizualizacji': imageUrl, // Może być null, jeśli upload zawiódł
-        'uwagi': _notesController.text.trim(),
+        'notes': _notesController.text.trim(),
         'source': 'ai_visualization',
       };
 

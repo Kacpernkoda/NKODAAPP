@@ -145,7 +145,7 @@ class SupabaseService {
             'phone': leadData['telefon'],
             'message': leadData['source'] == 'product_catalog' 
                 ? (leadData['notes']?.toString().isNotEmpty == true ? leadData['notes'] : 'Brak dodatkowych uwag.') 
-                : 'Samochód: ${leadData['marka_model'] ?? 'Brak'}\nRok: ${leadData['rok_produkcji'] ?? 'Brak'}\nIlość: ${leadData['ilosc'] ?? 'Brak'}\nWizualizacja: ${leadData['link_do_wizualizacji'] ?? 'Brak'}\nUwagi: ${leadData['uwagi'] ?? 'Brak'}',
+                : 'Samochód: ${leadData['marka_model'] ?? 'Brak'}\nRok: ${leadData['rok_produkcji'] ?? 'Brak'}\nIlość: ${leadData['ilosc'] ?? 'Brak'}\nWizualizacja: ${leadData['link_do_wizualizacji'] ?? 'Brak'}\nUwagi: ${leadData['notes'] ?? 'Brak'}',
             'productName': leadData['source'] == 'product_catalog' 
                 ? (leadData['product_name'] ?? 'Ogólne zapytanie') 
                 : (leadData['kolor_symbol'] ?? 'Wizualizacja AI'),
