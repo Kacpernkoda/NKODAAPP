@@ -109,22 +109,34 @@ class SupabaseService {
     }
   }
 
-  // Przesyłanie wizualizacji do Storage
+  // Przesyłanie wizualizacji do Storage (z pominięciem błędów CORS w SDK)
   Future<String?> uploadVisualization(Uint8List bytes) async {
     try {
       final String fileName = 'viz_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final String path = 'inquiries/$fileName';
-      
-      await _client.storage.from('visualizations').uploadBinary(
-        path,
-        bytes,
-        fileOptions: const FileOptions(contentType: 'image/jpeg'),
+      final String uploadUrl = 'https://wljdozodcnzslcqbrpwu.supabase.co/storage/v1/object/visualizations/$path';
+      final String anonKey = 'sb_publishable_cc861E3tVRXPdvqKSoCLRg_cQNOru_t';
+
+      final response = await http.post(
+        Uri.parse(uploadUrl),
+        headers: {
+          'apikey': anonKey,
+          'Authorization': 'Bearer $anonKey',
+          'Content-Type': 'image/jpeg',
+          'Accept': 'application/json',
+        },
+        body: bytes,
       );
-      
-      return _client.storage.from('visualizations').getPublicUrl(path);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 'https://wljdozodcnzslcqbrpwu.supabase.co/storage/v1/object/public/visualizations/$path';
+      } else {
+        print('HTTP Upload Error: ${response.statusCode} - ${response.body}');
+        throw Exception('HTTP Upload failed: ${response.statusCode}');
+      }
     } catch (e) {
       print('BŁĄD SUPABASE STORAGE (uploadVisualization): $e');
-      print('Wskazówka: Upewnij się, że bucket "visualizations" istnieje i jest publiczny.');
+      print('Wskazówka: Upewnij się, że bucket "visualizations" ma politykę INSERT i zrestartuj kartę (F5).');
       return null;
     }
   }
