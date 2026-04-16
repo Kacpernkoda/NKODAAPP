@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants.dart';
+import 'map_view_screen.dart';
 
 class MapTab extends StatefulWidget {
   const MapTab({Key? key}) : super(key: key);
@@ -93,32 +94,46 @@ class _MapTabState extends State<MapTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          _buildSearchBar(),
-          _buildFilterChips(),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.accentRed))
-                : _errorMessage != null
-                    ? Center(child: Text(_errorMessage!, style: const TextStyle(color: AppColors.accentRed)))
-                    : _filteredStudios.isEmpty
-                        ? const Center(
-                            child: Text('Brak wyników', style: TextStyle(color: AppColors.textSilver)),
-                          )
-                        : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppPadding.medium, vertical: 8),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _filteredStudios.length,
-                    itemBuilder: (context, index) {
-                      return _buildStudioCard(_filteredStudios[index]);
-                    },
-                  ),
-          ),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            _buildSearchBar(),
+            _buildFilterChips(),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.accentRed))
+                  : _errorMessage != null
+                      ? Center(child: Text(_errorMessage!, style: const TextStyle(color: AppColors.accentRed)))
+                      : _filteredStudios.isEmpty
+                          ? const Center(
+                              child: Text('Brak wyników', style: TextStyle(color: AppColors.textSilver)),
+                            )
+                          : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: AppPadding.medium, vertical: 8),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _filteredStudios.length,
+                      itemBuilder: (context, index) {
+                        return _buildStudioCard(_filteredStudios[index]);
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MapViewScreen()),
+          );
+        },
+        backgroundColor: AppColors.accentRed,
+        icon: const Icon(Icons.map, color: Colors.white),
+        label: const Text('WIDOK MAPY', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
       ),
     );
   }
