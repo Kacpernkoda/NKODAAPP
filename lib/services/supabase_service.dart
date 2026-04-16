@@ -131,12 +131,12 @@ class SupabaseService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return 'https://wljdozodcnzslcqbrpwu.supabase.co/storage/v1/object/public/visualizations/$path';
       } else {
-        print('HTTP Upload Error: ${response.statusCode} - ${response.body}');
-        throw Exception('HTTP Upload failed: ${response.statusCode}');
+        print('BŁĄD HTTP UPLOAD: ${response.statusCode}');
+        print('BODY: ${response.body}');
+        return null;
       }
     } catch (e) {
-      print('BŁĄD SUPABASE STORAGE (uploadVisualization): $e');
-      print('Wskazówka: Upewnij się, że bucket "visualizations" ma politykę INSERT i zrestartuj kartę (F5).');
+      print('BŁĄD KRYTYCZNY UPLOADU: $e');
       return null;
     }
   }
