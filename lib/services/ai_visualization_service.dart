@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AiVisualizationService {
   static final AiVisualizationService _instance = AiVisualizationService._internal();
@@ -13,8 +14,8 @@ class AiVisualizationService {
     required String colorHex,
     required String colorName,
   }) async {
-    // Hardcoded klucz podany przez inwestora - wyciągnięcie do środowiska nastąpi później
-    const String apiKey = 'AIzaSyBMCFTukkrQyzwb0Aq8AjjUg0dEW-wnaBA';
+    // Wczytanie bezpiecznego klucza ze środowiska .env (ukrytego przed GitHubem)
+    final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=$apiKey');
 
     final base64Input = base64Encode(imageBytes);
