@@ -89,8 +89,13 @@ class _MapViewScreenState extends State<MapViewScreen> {
         setState(() {
           _markers.clear();
           for (var installer in data) {
-            final lat = installer['latitude'] as double;
-            final lng = installer['longitude'] as double;
+            final lat = (installer['latitude'] as num).toDouble();
+            final lng = (installer['longitude'] as num).toDouble();
+            
+            final List<String> snippetParts = [];
+            if (installer['miasto']?.toString().isNotEmpty == true) snippetParts.add(installer['miasto']);
+            if (installer['adres']?.toString().isNotEmpty == true) snippetParts.add(installer['adres']);
+            if (installer['email']?.toString().isNotEmpty == true) snippetParts.add(installer['email']);
             
             _markers.add(
               Marker(
@@ -98,7 +103,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
                 position: LatLng(lat, lng),
                 infoWindow: InfoWindow(
                   title: installer['nazwa_studia'],
-                  snippet: installer['miasto'],
+                  snippet: snippetParts.join('\n'),
                 ),
                 icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
               ),
