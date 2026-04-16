@@ -27,6 +27,7 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
   final _brandController = TextEditingController();
   final _modelController = TextEditingController();
   final _yearController = TextEditingController();
+  final _notesController = TextEditingController();
   
   String _selectedQuantity = 'Full body';
   bool _isSending = false;
@@ -41,6 +42,7 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
     _brandController.dispose();
     _modelController.dispose();
     _yearController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -72,8 +74,9 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
         'marka_model': '${_brandController.text.trim()} ${_modelController.text.trim()}',
         'rok_produkcji': _yearController.text.trim(),
         'ilosc': _selectedQuantity,
-        'kolor_symbol': widget.colorSymbol,
+        'kolor_symbol': '${widget.colorSymbol} (${widget.colorName})',
         'link_do_wizualizacji': imageUrl, // Może być null, jeśli upload zawiódł
+        'uwagi': _notesController.text.trim(),
         'source': 'ai_visualization',
       };
 
@@ -192,6 +195,8 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              _buildTextField(_notesController, 'Uwagi / Pytania (opcjonalnie)', Icons.chat_bubble_outline, maxLines: 3, isRequired: false),
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: _isSending ? null : _submitInquiry,
@@ -212,10 +217,11 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {TextInputType? keyboardType}) {
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {TextInputType? keyboardType, int maxLines = 1, bool isRequired = true}) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      maxLines: maxLines,
       style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         labelText: label,
@@ -228,7 +234,7 @@ class _InquiryFormDialogState extends State<InquiryFormDialog> {
         errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.redAccent)),
         focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.redAccent)),
       ),
-      validator: (value) => value == null || value.isEmpty ? 'To pole jest wymagane' : null,
+      validator: isRequired ? (value) => value == null || value.isEmpty ? 'To pole jest wymagane' : null : null,
     );
   }
 }
