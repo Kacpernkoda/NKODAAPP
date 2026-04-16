@@ -1,6 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   const { name, email, phone, message, productName } = await req.json()
 
   const TENANT_ID = Deno.env.get('AZURE_TENANT_ID')
@@ -53,7 +63,7 @@ serve(async (req) => {
         toRecipients: [
           {
             emailAddress: {
-              address: "ppf@nkodaeurope.com"
+              address: "info@nkodaeurope.com"
             }
           }
         ]
@@ -71,20 +81,20 @@ serve(async (req) => {
 
     if (res.ok) {
       return new Response(JSON.stringify({ success: true }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       })
     } else {
       const errorData = await res.json()
       return new Response(JSON.stringify(errorData), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       })
     }
 
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
     })
   }
